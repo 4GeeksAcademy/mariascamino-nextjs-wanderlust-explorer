@@ -1,0 +1,587 @@
+Directory structure:
+└── mariascamino-nextjs-wanderlust-explorer/
+    ├── README.md
+    ├── config-dev.yaml
+    ├── context.md
+    ├── design.md
+    ├── nextjs-wanderlust-explorer/
+    │   ├── README.md
+    │   ├── AGENTS.md
+    │   ├── CLAUDE.md
+    │   ├── eslint.config.mjs
+    │   ├── next.config.ts
+    │   ├── package.json
+    │   ├── postcss.config.mjs
+    │   ├── tsconfig.json
+    │   └── src/
+    │       └── app/
+    │           ├── globals.css
+    │           ├── layout.tsx
+    │           └── page.tsx
+    └── src/
+        ├── data/
+        │   ├── experiences.ts
+        │   └── user.json
+        └── types/
+            └── index.ts
+
+================================================
+FILE: README.md
+================================================
+# mariascamino-nextjs-wanderlust-explorer
+
+
+================================================
+FILE: config-dev.yaml
+================================================
+version: "1.0"
+project_name: "nextjs-wanderlust-explorer"
+stack:
+  framework: "Next.js (App Router)"
+  language: "TypeScript"
+  styling: "Tailwind CSS"
+  linter: "ESLint"
+
+structure:
+  src_directory: "src/"
+  import_alias: "@/*"
+  references_directory: "./references/*.png"
+  files:
+    types: "src/types/index.ts"
+    data_experiences: "src/data/experiences.ts"
+    data_user: "src/data/user.json"
+    navbar: "src/components/Navbar.tsx"
+    card: "src/components/ExperienceCard.tsx"
+    search: "src/components/SearchBar.tsx"
+    filter: "src/components/FilterBar.tsx"
+    hook_experiences: "src/hooks/useExperiences.ts"
+    page_home: "src/app/page.tsx"
+    page_explorer: "src/app/experiences/page.tsx"
+    page_detail: "src/app/experiences/[id]/page.tsx"
+    page_favorites: "src/app/favorites/page.tsx"
+    page_profile: "src/app/profile/page.tsx"
+
+rules:
+  design_source:
+    use_local_png_references: true
+    path: "./references/"
+  state_management:
+    prohibited:
+      - "redux"
+      - "zustand"
+      - "recoil"
+      - "mobx"
+      - "localStorage"
+    allowed:
+      - "useState"
+      - "useContext"
+      - "Custom Hooks"
+  routing:
+    use_client_navigation: true
+    url_driven_state: true
+    required_hooks:
+      - "useSearchParams"
+      - "usePathname"
+      - "useRouter"
+
+
+================================================
+FILE: context.md
+================================================
+# Project Context: Wanderlust Explorer
+
+## Overview
+Wanderlust Explorer is an interactive multi-page web application for Wanderlust Labs built with Next.js (App Router), React, and TypeScript. Users can browse, search, filter, and favorite curated travel experiences around the world without page reloads.
+
+## Project Setup Commands
+- Creation command:
+  `npx create-next-app@latest nextjs-wanderlust-explorer --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"`
+
+## Visual References & Design Base
+- Design Mocks: Use the PNG reference images located in the local `./references` folder (e.g., `./references/*.png`) as the exact visual blueprint for UI layout, color schemes, card structures, and spacing.
+
+## Data Architecture
+- Experience items shape (`src/types/index.ts`): `id`, `title`, `description`, `category` ('Adventure' | 'Culture' | 'Food' | 'Wellness' | 'Nature'), `destination` ("City, Country"), `price`, `rating`, `imageUrl`.
+- Dataset location: `src/data/experiences.ts` containing 100 mock experience items.
+
+## Pages & Routing (App Router)
+- `/` (Home): Hero section with CTA button navigating to `/experiences`.
+- `/experiences` (Explorer): Grid of 100 experience cards, title search bar, category filter, destination filter.
+- `/experiences/[id]` (Detail): Comprehensive view for a single experience fetched by ID.
+- `/favorites` (Favorites): Displays user favorited experiences.
+- `/profile` (Profile): User information card and total count of saved favorites.
+
+## Business Logic & Constraints
+1. Search & Filtering:
+   - Case-insensitive regex title matching: `new RegExp(term, 'i').test(experience.title)`.
+   - Category and destination filters operate independently and stack with search.
+   - Sync active search & filters to URL query params using `useSearchParams` and `usePathname`.
+   - On page load, read query params to pre-fill search inputs and pre-filter results.
+2. Favorites System:
+   - Toggle heart icon on cards.
+   - Managed via `useState` at shared high-level component and passed down via props.
+   - NO `localStorage` or external database persistence required.
+3. Component Architecture:
+   - Required components: `Navbar`, `ExperienceCard`, `SearchBar`, `FilterBar`.
+   - Custom hook required (e.g., `useExperiences` or `useFilters`) to encapsulate filtering logic.
+   - `useEffect` required for syncing/side-effects.
+   - NO external state management libraries (Redux, Zustand, Recoil).
+
+
+================================================
+FILE: design.md
+================================================
+# Design Guidelines: Wanderlust Explorer
+
+## Visual System & PNG References
+- CSS Framework: Tailwind CSS
+- Design Source: Rely strictly on the PNG mockups located inside the `./references` directory as visual guidance.
+- Layout: Fully responsive (Mobile-first, Tablet, Desktop grid `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`).
+
+## Core Components Specs
+
+### Navbar (`src/components/Navbar.tsx`)
+- Fixed at the top across all pages.
+- Navigation links: Home (`/`), Explorer (`/experiences`), Favorites (`/favorites`), Profile (`/profile`).
+- Active link highlighting using `usePathname()`.
+
+### ExperienceCard (`src/components/ExperienceCard.tsx`)
+- Designed according to PNG references in `./references`.
+- Card image with floating badge for `category`.
+- Title, destination, rating with star icon, price per person.
+- Interactive Heart icon button (solid red when favorited, outlined when not).
+
+### SearchBar & FilterBar (`src/components/SearchBar.tsx`, `src/components/FilterBar.tsx`)
+- Search input with clear button.
+- Category dropdown/buttons ('Adventure' | 'Culture' | 'Food' | 'Wellness' | 'Nature').
+- Destination dropdown/input.
+- Clear/Reset filters action.
+
+### States & UX
+- "No results found" fallback state when combined filters return 0 items.
+- Smooth client-side navigation using Next.js `<Link>` without full page reloads.
+
+## Documentation Requirement
+- Reference the PNG files from `./references` in the `## Design References` section of `README.md`.
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/README.md
+================================================
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/AGENTS.md
+================================================
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/CLAUDE.md
+================================================
+@AGENTS.md
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/eslint.config.mjs
+================================================
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/next.config.ts
+================================================
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/package.json
+================================================
+{
+  "name": "nextjs-wanderlust-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.2.11",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.11",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/postcss.config.mjs
+================================================
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/tsconfig.json
+================================================
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/src/app/globals.css
+================================================
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/src/app/layout.tsx
+================================================
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
+}
+
+
+
+================================================
+FILE: nextjs-wanderlust-explorer/src/app/page.tsx
+================================================
+import Image from "next/image";
+
+export default function Home() {
+  return (
+    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <Image
+          className="dark:invert"
+          src="/next.svg"
+          alt="Next.js logo"
+          width={100}
+          height={20}
+          priority
+        />
+        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+            To get started, edit the page.tsx file.
+          </h1>
+          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+            Looking for a starting point or more instructions? Head over to{" "}
+            <a
+              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              className="font-medium text-zinc-950 dark:text-zinc-50"
+            >
+              Templates
+            </a>{" "}
+            or the{" "}
+            <a
+              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              className="font-medium text-zinc-950 dark:text-zinc-50"
+            >
+              Learning
+            </a>{" "}
+            center.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+          <a
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              className="dark:invert"
+              src="/vercel.svg"
+              alt="Vercel logomark"
+              width={16}
+              height={16}
+            />
+            Deploy Now
+          </a>
+          <a
+            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
+            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Documentation
+          </a>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+
+
+================================================
+FILE: src/data/experiences.ts
+================================================
+import { Experience } from '@/types';
+
+export const EXPERIENCES_DATA: Experience[] = [
+  {
+    id: "exp-001",
+    title: "Bangkok Street Food Tour by Night",
+    description: "Explore the vibrant night markets and taste authentic local dishes in Bangkok.",
+    category: "Food",
+    destination: "Bangkok, Thailand",
+    price: 45,
+    rating: 4.9,
+    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600"
+  },
+  {
+    id: "exp-002",
+    title: "Sailing the Adriatic Sea",
+    description: "Discover hidden coves and crystal-clear waters along the Croatian coastline.",
+    category: "Adventure",
+    destination: "Dubrovnik, Croatia",
+    price: 120,
+    rating: 4.8,
+    imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600"
+  },
+  {
+    id: "exp-003",
+    title: "Kyoto Ancient Temples & Tea Ceremony",
+    description: "Immerse yourself in traditional Japanese culture and peaceful zen gardens.",
+    category: "Culture",
+    destination: "Kyoto, Japan",
+    price: 85,
+    rating: 4.95,
+    imageUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600"
+  },
+  {
+    id: "exp-004",
+    title: "Bali Jungle Yoga & Wellness Retreat",
+    description: "Rejuvenate your body and mind surrounded by lush tropical rainforests.",
+    category: "Wellness",
+    destination: "Ubud, Indonesia",
+    price: 60,
+    rating: 4.7,
+    imageUrl: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=600"
+  },
+  {
+    id: "exp-005",
+    title: "Swiss Alps Hiking & Glacier Trekking",
+    description: "Breathtaking mountain vistas and guided alpine trails for nature lovers.",
+    category: "Nature",
+    destination: "Zermatt, Switzerland",
+    price: 150,
+    rating: 4.9,
+    imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600"
+  }
+];
+
+
+================================================
+FILE: src/data/user.json
+================================================
+{
+  "id": "usr-101",
+  "name": "Lea Moreau",
+  "email": "lea.moreau@wanderlust.com",
+  "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300",
+  "bio": "Travel Product Manager & Explorer. Passionate about discovering local cultures, hidden food spots, and outdoor adventures."
+}
+
+
+
+================================================
+FILE: src/types/index.ts
+================================================
+export type CategoryType = 'Adventure' | 'Culture' | 'Food' | 'Wellness' | 'Nature';
+
+export interface Experience {
+  id: string;
+  title: string;
+  description: string;
+  category: CategoryType;
+  destination: string; // Format: "City, Country"
+  price: number;
+  rating: number;
+  imageUrl: string;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  bio: string;
+}
+

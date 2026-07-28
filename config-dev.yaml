@@ -1,0 +1,49 @@
+version: "1.0"
+project_name: "nextjs-wanderlust-explorer"
+stack:
+  framework: "Next.js (App Router)"
+  language: "TypeScript"
+  styling: "Tailwind CSS"
+  linter: "ESLint"
+
+structure:
+  src_directory: "src/"
+  import_alias: "@/*"
+  references_directory: "./references/*.png"
+  files:
+    types: "src/types/index.ts"
+    data_experiences: "src/data/experiences.ts"
+    data_user: "src/data/user.json"
+    navbar: "src/components/Navbar.tsx"
+    card: "src/components/ExperienceCard.tsx"
+    search: "src/components/SearchBar.tsx"
+    filter: "src/components/FilterBar.tsx"
+    hook_experiences: "src/hooks/useExperiences.ts"
+    page_home: "src/app/page.tsx"
+    page_explorer: "src/app/experiences/page.tsx"
+    page_detail: "src/app/experiences/[id]/page.tsx"
+    page_favorites: "src/app/favorites/page.tsx"
+    page_profile: "src/app/profile/page.tsx"
+
+rules:
+  design_source:
+    use_local_png_references: true
+    path: "./references/"
+  state_management:
+    prohibited:
+      - "redux"
+      - "zustand"
+      - "recoil"
+      - "mobx"
+      - "localStorage"
+    allowed:
+      - "useState"
+      - "useContext"
+      - "Custom Hooks"
+  routing:
+    use_client_navigation: true
+    url_driven_state: true
+    required_hooks:
+      - "useSearchParams"
+      - "usePathname"
+      - "useRouter"
