@@ -39,8 +39,7 @@ export function useExperiences(): UseExperiencesResult {
     if (destination) params.set("destination", destination);
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, category, destination, pathname]);
+  }, [search, category, destination, pathname, router]);
 
   const setSearch = useCallback((value: string) => setSearchState(value), []);
   const setCategory = useCallback(

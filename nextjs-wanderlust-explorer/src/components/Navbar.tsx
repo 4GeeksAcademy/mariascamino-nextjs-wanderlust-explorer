@@ -16,10 +16,10 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b border-slate-200">
       <nav className="max-w-6xl mx-auto h-full flex items-center justify-between px-6">
-        <Link href="/" className="text-lg font-extrabold text-slate-900 tracking-tight">
+        <Link href="/" className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
           Wanderlust<span className="text-blue-600"> Explorer</span>
         </Link>
-        <ul className="flex gap-6">
+        <ul className="flex gap-4 sm:gap-6">
           {NAV_LINKS.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
             return (
@@ -31,7 +31,7 @@ export default function Navbar() {
                   }`}
                 >
                   <Icon className="h-5 w-5" filled={isActive} />
-                  {label}
+                  <span className="hidden sm:inline">{label}</span>
                 </Link>
               </li>
             );

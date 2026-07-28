@@ -29,4 +29,10 @@ Abre [http://localhost:3000](http://localhost:3000).
 
 ## Design References
 
-Pendiente: agregar los PNG de diseño en `./references/` y ajustar estilos de `ExperienceCard`, `Navbar`, `SearchBar` y `FilterBar` para que calcen exactamente con los mocks. Por ahora, los componentes siguen las especificaciones de `design.md` (colores neutros, cards con badge de categoría, corazón de favorito, grid responsive) pero no un PNG concreto.
+Los mocks visuales usados como blueprint están en `./references/`:
+
+- `reference-home.png` / `reference-home2.png` — inspiraron el hero con buscador grande y el bloque de destinos destacados en `/` (`src/app/page.tsx`).
+- `reference-search-results.png` — inspiró la grilla de tarjetas y la barra de filtros en pills de `/experiences` (`src/components/ExperienceCard.tsx`, `src/components/FilterBar.tsx`).
+- `reference-experience-detail.png` — inspiró el layout de dos columnas (imagen + descripción a la izquierda, tarjeta de precio fija a la derecha) de `/experiences/[id]`.
+
+Paleta adoptada de las referencias: fondo blanco/gradiente celeste claro, texto principal en slate-900, acento azul (blue-600) para botones y estados activos.
